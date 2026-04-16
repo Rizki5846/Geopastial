@@ -383,4 +383,5 @@ async function exportPDF() {
 // ── Init app on load ───────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   renderSchoolList();
+  generatePreview();
 });

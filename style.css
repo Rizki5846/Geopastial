@@ -247,14 +247,20 @@ body {
 .btn-export:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(255,107,26,0.6); }
 
 /* ============================================================
-   PREVIEW OVERLAY
+   EDITOR PANEL (HIDDEN FOR VIEW ONLY MODE)
+   ============================================================ */
+#editorPanel {
+  display: none !important;
+}
+
+/* ============================================================
+   PREVIEW OVERLAY (FORCED SHOWN)
    ============================================================ */
 #previewOverlay {
-  position: fixed;
-  inset: 0;
+  display: block !important;
+  position: relative;
   background: #0a0c11;
-  z-index: 1000;
-  overflow-y: auto;
+  overflow-y: visible;
   padding: 0 0 40px;
 }
 
@@ -293,16 +299,7 @@ body {
 .btn-export-sm:hover { transform: translateY(-1px); }
 
 .btn-close {
-  background: rgba(233,53,53,0.15);
-  border: 1px solid rgba(233,53,53,0.3);
-  color: var(--accent-red);
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  cursor: pointer;
-  font-family: 'Inter', sans-serif;
-  transition: all 0.2s;
+  display: none !important;
 }
 .btn-close:hover { background: rgba(233,53,53,0.3); }
 
