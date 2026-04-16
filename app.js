@@ -168,9 +168,9 @@ function calcStats() {
 
 // ── Generate Preview ───────────────────────────────────────────────
 function generatePreview() {
-  const judul1 = document.getElementById('judulPeta').value || 'PETA JARAK DAPUR';
+  const judul1 = document.getElementById('judulPeta').value || 'PETA JARAK SPPG';
   const judul2 = document.getElementById('judulTabel').value || 'DATA SEKOLAH PENERIMA MANFAAT';
-  const namaDapur = document.getElementById('namaDapur').value || 'Dapur SPPG';
+  const namaDapur = document.getElementById('namaDapur').value || 'SPPG';
 
   document.getElementById('p1_judul').textContent = judul1;
   document.getElementById('p2_judul').textContent = judul2;
@@ -223,7 +223,7 @@ function renderLabels() {
   document.getElementById('labelsRight').innerHTML = rightSchools.map(buildCard).join('');
 
   // Add dapur label if right side
-  const namaDapur = document.getElementById('namaDapur').value || 'Dapur SPPG';
+  const namaDapur = document.getElementById('namaDapur').value || 'SPPG';
   document.getElementById('labelsRight').innerHTML = `
     <div class="label-card type-dapur">🏠 ${namaDapur}</div>
   ` + rightSchools.map(buildCard).join('');
