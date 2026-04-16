@@ -20,7 +20,7 @@ let schools = [
   { nama: "SMPN 1 Campaka", alamat: "Campaka", jumlah: 818, jarak: "500 M", waktu: 10, tipe: "smp", lat: -6.997507588382655, lng: 107.14232043742905, posisi: "kanan" },
   { nama: "SMKN 1 Campaka", alamat: "Campaka", jumlah: 1068, jarak: "500 M", waktu: 5, tipe: "smk", lat: -6.997641446732054, lng: 107.13929373962823, posisi: "kanan" },
   { nama: "Posyandu Mawar", alamat: "Campaka", jumlah: 184, jarak: "1,5 KM", waktu: 20, tipe: "posyandu", lat: -6.997445569051685, lng: 107.15384898407693, posisi: "kanan" },
-  { nama: "Posyandu Anggrek", alamat: "Campaka", jumlah: 63, jarak: "", waktu: "", tipe: "posyandu", lat: "", lng: "", posisi: "kanan" },
+  { nama: "Posyandu Anggrek", alamat: "Campaka", jumlah: 63, jarak: "2,6 KM", waktu: 25, tipe: "posyandu", lat: -6.9947833663697905, lng: 107.15769136382889, posisi: "kanan" },
   { nama: "Posyandu Melati", alamat: "Campaka", jumlah: 84, jarak: "2,7 KM", waktu: 27, tipe: "posyandu", lat: -7.002898188855134, lng: 107.16181300151237, posisi: "kanan" }
 ];
 
@@ -36,6 +36,27 @@ schools.forEach((s, idx) => {
 
 let leafletMap = null;
 let mapInitialized = false;
+
+// ── Helpers ────────────────────────────────────────────────────────
+function getDapurCoords() {
+  const customStr = document.getElementById('dapur_coords').value;
+  const parts = customStr.split(',');
+  if (parts.length === 2) {
+    return { lat: parseFloat(parts[0].trim()), lng: parseFloat(parts[1].trim()) };
+  }
+  return { lat: -7.001755, lng: 107.142110 };
+}
+
+function getColor(tipe) {
+  if (tipe === 'tk') return '#f1c40f';
+  if (tipe === 'sd') return '#e93535';
+  if (tipe === 'smp') return '#3498db';
+  if (tipe === 'smk') return '#1abc9c';
+  if (tipe === 'posyandu') return '#e67e22';
+  return '#f1c40f';
+}
+
+
 
 // ── Render editor school list ──────────────────────────────────────
 function renderSchoolList() {
@@ -239,21 +260,10 @@ function initLeafletMap(namaDapur) {
     .addTo(leafletMap)
     .bindTooltip(`<b>${namaDapur}</b>`, { permanent: false, direction: 'top', className: 'dapur-tooltip' });
 
-  // Mapping colors helper
-  const getColor = (tipe) => {
-    if(tipe === 'tk') return '#f1c40f';
-    if(tipe === 'sd') return '#e93535';
-    if(tipe === 'smp') return '#3498db';
-    if(tipe === 'smk') return '#1abc9c';
-    if(tipe === 'posyandu') return '#e67e22';
-    return '#888';
-  };
-
   // School markers
   schools.forEach((s, i) => {
     if (!s.lat || !s.lng) return;
     
-    // Rute (Line to dapur) - Warna unik tapi terstruktur per bagian
     const lineColor = s.color;
     
     L.polyline([[dapurCoords.lat, dapurCoords.lng], [s.lat, s.lng]], {
@@ -378,6 +388,8 @@ async function exportPDF() {
   
   // Allow Leaflet a moment to redraw
   await new Promise(r => setTimeout(r, 500));
+  
+  printArea.classList.add('exporting');
 
   try {
     // Generate PDF directly from the target area natively inside the preview overlay
@@ -386,6 +398,7 @@ async function exportPDF() {
     console.error('PDF error:', err);
     alert('Gagal export PDF: ' + err.message);
   } finally {
+    printArea.classList.remove('exporting');
     window.scrollTo(0, oldScroll);
     loading.classList.remove('show');
   }

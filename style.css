@@ -695,9 +695,22 @@ body {
 }
 
 /* ============================================================
-   @print
+   @print & EXPORT
    ============================================================ */
 @media print {
   #editorPanel, #previewOverlay .preview-header { display: none !important; }
-  .pdf-page { margin: 0; border-radius: 0; box-shadow: none; }
+  .pdf-page { margin: 0; box-shadow: none; border: none; page-break-after: always; }
+}
+
+.exporting .pdf-page {
+  margin: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  page-break-after: always !important;
+}
+
+.exporting .html2pdf__page-break {
+  display: block;
+  height: 0;
+  page-break-before: always;
 }
