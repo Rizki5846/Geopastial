@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generator Peta Jarak Dapur SPPG</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Orbitron:wght@700;900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- ===================== EDITOR PANEL ===================== -->
+  <div id="editorPanel">
+    <div class="editor-header">
+      <div class="editor-logo">🗺️</div>
+      <div>
+        <h1 class="editor-title">Peta Jarak Dapur SPPG</h1>
+        <p class="editor-subtitle">Generator Dokumen Geospasial PDF</p>
+      </div>
+    </div>
+
+    <!-- INFO DAPUR -->
+    <div class="section-card">
+      <div class="section-label">🏠 Informasi Dapur SPPG</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Nama Dapur / Lokasi</label>
+          <input type="text" id="namaDapur" placeholder="Contoh: Dapur SPPG Campaka" value="Dapur SPPG Campaka" />
+        </div>
+        <div class="form-group">
+          <label>Judul Peta (Halaman 1)</label>
+          <input type="text" id="judulPeta" placeholder="Contoh: PETA JARAK DAPUR CAMPAKA"
+            value="PETA JARAK DAPUR CAMPAKA" />
+        </div>
+        <div class="form-group">
+          <label>Judul Tabel (Halaman 2)</label>
+          <input type="text" id="judulTabel" placeholder="Contoh: DATA SEKOLAH PENERIMA MANFAAT"
+            value="DATA SEKOLAH PENERIMA MANFAAT DAPUR SPPG CAMPAKA" />
+        </div>
+        <div class="form-group">
+          <label>Koordinat Dapur (Lat, Lng)</label>
+          <input type="text" id="dapur_coords" placeholder="-7.001755, 107.142110" value="-7.001755, 107.142110" />
+        </div>
+      </div>
+    </div>
+
+    <!-- DAFTAR SEKOLAH -->
+    <div class="section-card">
+      <div class="section-label">🏫 Data Sekolah Penerima Manfaat</div>
+      <div id="schoolList"></div>
+      <button class="btn-add" onclick="addSchool()">＋ Tambah Sekolah</button>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="action-bar">
+      <button class="btn-preview" onclick="generatePreview()">👁 Preview Dokumen</button>
+      <button class="btn-export" onclick="exportPDF()">📄 Export PDF</button>
+    </div>
+  </div>
+
+  <!-- ===================== PREVIEW PANEL ===================== -->
+  <div id="previewOverlay" style="display:none;">
+    <div class="preview-header">
+      <span class="preview-title">👁 Preview Dokumen</span>
+      <div style="display:flex;gap:12px;align-items:center;">
+        <button class="btn-export-sm" onclick="exportPDF()">📄 Export PDF</button>
+        <button class="btn-close" onclick="closePreview()">✕ Tutup</button>
+      </div>
+    </div>
+
+    <!-- PRINT AREA CONTAINER -->
+    <div id="pdfPrintArea">
+      <!-- PAGE 1: MAP -->
+      <div id="page1" class="pdf-page page-1">
+      <div class="page1-header">
+        <div class="page1-header-bar">
+          <div class="hex-badge">i</div>
+          <h1 id="p1_judul">PETA JARAK DAPUR KARANG TENGAH</h1>
+          <div class="hex-badge">1</div>
+        </div>
+      </div>
+
+      <div class="page1-content">
+        <!-- LEFT LABELS -->
+        <div class="labels-left" id="labelsLeft"></div>
+
+        <!-- MAP CENTER -->
+        <div class="map-container">
+          <div id="leafletMap"></div>
+          <div class="map-overlay-bottom">
+            <div class="summary-bar">
+              <div class="summary-total">
+                <span class="summary-label">JUMLAH</span>
+                <span class="summary-value" id="p1_jumlah_total">0</span>
+              </div>
+              <div class="summary-item" style="background: rgba(241,196,15,0.8); border-color: #f1c40f;"><span
+                  id="p1_jumlah_tk">TK 0</span></div>
+              <div class="summary-item" style="background: rgba(233,53,53,0.8); border-color: #e93535;"><span
+                  id="p1_jumlah_sd">SD 0</span></div>
+              <div class="summary-item" style="background: rgba(52,152,219,0.8); border-color: #3498db;"><span
+                  id="p1_jumlah_smp">SMP 0</span></div>
+              <div class="summary-item" style="background: rgba(26,188,156,0.8); border-color: #1abc9c;"><span
+                  id="p1_jumlah_smk">SMK 0</span></div>
+              <div class="summary-item" style="background: rgba(230,126,34,0.8); border-color: #e67e22;"><span
+                  id="p1_jumlah_posyandu">POSY 0</span></div>
+              <div class="summary-item jarak" style="flex: 1.5; font-size: 0.6rem;">
+                <span id="p1_jarak_info">JARAK TERDEKAT 0 KM &nbsp;|&nbsp; JARAK TERJAUH 0 KM</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT LABELS -->
+        <div class="labels-right" id="labelsRight"></div>
+      </div>
+    </div>
+
+    <!-- PAGE 2: TABLE -->
+    <div id="page2" class="pdf-page page-2">
+      <div class="page2-header">
+        <div class="page2-header-bar">
+          <h1 id="p2_judul">DATA SEKOLAH PENERIMA MANFAAT DAPUR SPPG</h1>
+          <div class="hex-badge-p2">2</div>
+        </div>
+      </div>
+      <div class="page2-content">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>NO</th>
+              <th>SEKOLAH PENERIMA MANFAAT</th>
+              <th>ALAMAT</th>
+              <th>JUMLAH SISWA</th>
+              <th>JARAK</th>
+              <th>KET.</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </div>
+    </div> <!-- END PRINT AREA -->
+  </div>
+
+  <!-- LOADING OVERLAY -->
+  <div id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Membuat PDF... Harap Tunggu</div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
