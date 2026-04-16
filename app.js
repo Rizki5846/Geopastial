@@ -24,6 +24,16 @@ let schools = [
   { nama: "Posyandu Melati", alamat: "Campaka", jumlah: 84, jarak: "2,7 KM", waktu: 27, tipe: "posyandu", lat: -7.002898188855134, lng: 107.16181300151237, posisi: "kanan" }
 ];
 
+const PALETTE = [
+  '#FF3B30', '#00FA9A', '#FFCC00', '#007AFF', '#FF2D55', 
+  '#5AC8FA', '#8A2BE2', '#FF9500', '#4CD964', '#D70040', 
+  '#00C78C', '#FF1493', '#5856D6', '#1abc9c', '#f1c40f'
+];
+
+schools.forEach((s, idx) => {
+  s.color = PALETTE[idx % PALETTE.length];
+});
+
 let leafletMap = null;
 let mapInitialized = false;
 
@@ -182,9 +192,9 @@ function renderLabels() {
   const rightSchools = schools.filter(s => s.posisi === 'kanan');
 
   const buildCard = (s) => `
-    <div class="label-card type-${s.tipe}">
-      <div class="label-name">${s.nama}</div>
-      <div class="label-siswa">${(s.jumlah||0).toLocaleString('id-ID')} SISWA</div>
+    <div class="label-card" style="border-left: 6px solid ${s.color}; border-color: ${s.color}; background: ${s.color}15;">
+      <div class="label-name" style="color: #fff;">${s.nama}</div>
+      <div class="label-siswa" style="color: ${s.color};">${(s.jumlah||0).toLocaleString('id-ID')} SISWA</div>
       <div class="label-jarak">JARAK = ${s.jarak} / ${s.waktu}' MENIT</div>
     </div>`;
 
@@ -243,8 +253,9 @@ function initLeafletMap(namaDapur) {
   schools.forEach((s, i) => {
     if (!s.lat || !s.lng) return;
     
-    // Rute (Line to dapur)
-    const lineColor = getColor(s.tipe);
+    // Rute (Line to dapur) - Warna unik tapi terstruktur per bagian
+    const lineColor = s.color;
+    
     L.polyline([[dapurCoords.lat, dapurCoords.lng], [s.lat, s.lng]], {
       color: lineColor, weight: 2, dashArray: '5, 5', opacity: 0.8
     }).addTo(leafletMap);
