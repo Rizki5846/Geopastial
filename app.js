@@ -56,8 +56,6 @@ function getColor(tipe) {
   return '#f1c40f';
 }
 
-
-
 // ── Render editor school list ──────────────────────────────────────
 function renderSchoolList() {
   const container = document.getElementById('schoolList');
